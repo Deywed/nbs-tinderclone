@@ -21,7 +21,8 @@ namespace Backend.Services
             _users.InsertOneAsync(user);
 
         public Task DeleteUserAsync(Guid id) =>
-            _users.DeleteOneAsync(u => u.Id == id);
+        null;
+            // _users.DeleteOneAsync(u => u.Id == id);
 
         public Task<List<User>> GetAllUsersAsync()
         {
@@ -32,7 +33,8 @@ namespace Backend.Services
             _users.Find(u => u.Email == email).FirstOrDefaultAsync();
 
         public Task<User> GetUserByIdAsync(Guid id) =>
-            _users.Find(u => u.Id == id).FirstOrDefaultAsync();
+        null;
+            // _users.Find(u => u.Id == id).FirstOrDefaultAsync();
 
         public Task<List<User>> GetUsersByPreferencesAsync(User user)
         {

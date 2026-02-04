@@ -28,6 +28,7 @@
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/Backend.csproj.CoreCompileInputs.cache
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/Backend.MvcApplicationPartsAssemblyInfo.cs
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/Backend.MvcApplicationPartsAssemblyInfo.cache
+/Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/Backend.sourcelink.json
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/scopedcss/bundle/Backend.styles.css
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/staticwebassets.build.json
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/staticwebassets.development.json

@@ -1,3 +1,5 @@
+using Backend.Services;
+using Backend.Services.Interfaces;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,8 @@ builder.Services.AddSwaggerGen();
 // 3. MongoDB
 var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoConnectionString));
+builder.Services.AddScoped<IUserRepository, MongoUserRepository>();
+
 
 // 4. Repozitorijumi
 

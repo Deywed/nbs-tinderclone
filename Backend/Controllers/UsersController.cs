@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Backend.Models;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace Backend.Controllers
 {
@@ -22,7 +23,8 @@ namespace Backend.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
-            user.Id = Guid.NewGuid();
+            user.Id = ObjectId.GenerateNewId().ToString();
+    
             await _userRepository.CreateUserAsync(user);
             return Ok(user);
         }
@@ -42,7 +44,7 @@ namespace Backend.Controllers
             if (existingUser == null)
                 return NotFound();
 
-            updatedUser.Id = id;
+            updatedUser.Id = id.ToString();
             await _userRepository.UpdateUserAsync(updatedUser);
             return Ok(updatedUser);
         }
