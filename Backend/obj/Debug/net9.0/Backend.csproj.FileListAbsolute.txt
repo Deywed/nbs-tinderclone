@@ -45,3 +45,12 @@
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/Backend.pdb
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/Backend.genruntimeconfig.cache
 /Users/macbook/dev/tinderclone/Backend/obj/Debug/net9.0/ref/Backend.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/BCrypt.Net-Next.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/Users/macbook/dev/tinderclone/Backend/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll

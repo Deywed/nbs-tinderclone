@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Backend.Models;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 
@@ -13,26 +14,34 @@ namespace Backend.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IMongoUserService _mongoUserService;
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IMongoUserService mongoUserService)
         {
-            _userRepository = userRepository;
+            _mongoUserService = mongoUserService;
         }
 
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
             user.Id = ObjectId.GenerateNewId().ToString();
-    
-            await _userRepository.CreateUserAsync(user);
+
+            await _mongoUserService.CreateUserAsync(user);
             return Ok(user);
+        }
+
+        [Authorize]
+        [HttpGet("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _mongoUserService.GetAllUsersAsync();
+            return Ok(users);
         }
         [HttpGet("GetUser/{id}")]
         public async Task<IActionResult> GetUser(Guid id)
         {
-            var user = await _userRepository.GetUserByIdAsync(id);
-            if(user == null)
+            var user = await _mongoUserService.GetUserByIdAsync(id);
+            if (user == null)
                 return NotFound();
             return Ok(user);
         }
@@ -40,28 +49,28 @@ namespace Backend.Controllers
         [HttpPut("UpdateUser/{id}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] User updatedUser)
         {
-            var existingUser = await _userRepository.GetUserByIdAsync(id);
+            var existingUser = await _mongoUserService.GetUserByIdAsync(id);
             if (existingUser == null)
                 return NotFound();
 
             updatedUser.Id = id.ToString();
-            await _userRepository.UpdateUserAsync(updatedUser);
+            await _mongoUserService.UpdateUserAsync(updatedUser);
             return Ok(updatedUser);
         }
         [HttpDelete("DeleteUser/{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var existingUser = await _userRepository.GetUserByIdAsync(id);
+            var existingUser = await _mongoUserService.GetUserByIdAsync(id);
             if (existingUser == null)
                 return NotFound();
 
-            await _userRepository.DeleteUserAsync(id);
+            await _mongoUserService.DeleteUserAsync(id);
             return NoContent();
         }
         [HttpGet("GetUserByEmail")]
         public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
         {
-            var user = await _userRepository.GetUserByEmailAsync(email);
+            var user = await _mongoUserService.GetUserByEmailAsync(email);
             if (user == null)
                 return NotFound();
             return Ok(user);
