@@ -6,7 +6,7 @@ using Backend.Models;
 
 namespace Backend.Services.Interfaces
 {
-    public interface IMongoUserService
+    public interface IUserService
     {
         Task<User> GetUserByIdAsync(Guid id);
         Task<User> GetUserByEmailAsync(string email);

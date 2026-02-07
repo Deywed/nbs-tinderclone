@@ -8,7 +8,7 @@ using MongoDB.Driver;
 
 namespace Backend.Services
 {
-    public class MongoUserService : IMongoUserService
+    public class MongoUserService : IUserService
     {
         private readonly IMongoCollection<User> _users;
 
@@ -21,8 +21,7 @@ namespace Backend.Services
             _users.InsertOneAsync(user);
 
         public Task DeleteUserAsync(Guid id) =>
-        null!;
-        // _users.DeleteOneAsync(u => u.Id == id);
+            _users.DeleteOneAsync(u => u.Id == id.ToString());
         public Task<List<User>> GetAllUsersAsync()
         {
             return _users.Find(_ => true).ToListAsync();
@@ -32,8 +31,7 @@ namespace Backend.Services
             _users.Find(u => u.Email == email).FirstOrDefaultAsync();
 
         public Task<User> GetUserByIdAsync(Guid id) =>
-        null!;
-        // _users.Find(u => u.Id == id).FirstOrDefaultAsync();
+            _users.Find(u => u.Id == id.ToString()).FirstOrDefaultAsync();
 
         public Task<List<User>> GetUsersByPreferencesAsync(User user)
         {

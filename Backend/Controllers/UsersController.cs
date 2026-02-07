@@ -14,9 +14,9 @@ namespace Backend.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IMongoUserService _mongoUserService;
+        private readonly IUserService _mongoUserService;
 
-        public UsersController(IMongoUserService mongoUserService)
+        public UsersController(IUserService mongoUserService)
         {
             _mongoUserService = mongoUserService;
         }

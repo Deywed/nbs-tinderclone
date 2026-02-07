@@ -16,8 +16,8 @@ namespace Backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        private readonly IMongoUserService _userRepository;
-        public AuthController(ITokenService tokenService, IMongoUserService userRepository)
+        private readonly IUserService _userRepository;
+        public AuthController(ITokenService tokenService, IUserService userRepository)
         {
             _tokenService = tokenService;
             _userRepository = userRepository;

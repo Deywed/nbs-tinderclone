@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Neo4j.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,6 @@ builder.Services.AddControllers();
 
 // 2. Swagger/OpenAPI - KORISTI SAMO OVO ZA SWAGGER UI
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Moj API", Version = "v1" });
@@ -46,38 +46,46 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 3. MongoDB
+// 3. Baze
+//MongoDB
 var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb");
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoConnectionString));
+//NEO4j
+var neo4jUri = builder.Configuration.GetConnectionString("Neo4j");
+var neo4jUser = builder.Configuration["Neo4jSettings:User"];
+var neo4jPass = builder.Configuration["Neo4jSettings:Password"];
+builder.Services.AddSingleton(GraphDatabase.Driver(neo4jUri, AuthTokens.Basic(neo4jUser, neo4jPass)));
 
-builder.Services.AddScoped<IMongoUserService, MongoUserService>();
+// 4. Servsi
+builder.Services.AddScoped<IUserService, MongoUserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+// 5. JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-// 2. Konfiguracija same JWT šeme (ovo već verovatno imaš delimično)
+// Konfiguracija JWT
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false, // Ne proveravaj ko je izdao
-        ValidateAudience = false, // Ne proveravaj kome je namenjeno
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ClockSkew = TimeSpan.Zero // Obavezno dodaj ovo da izbegneš kašnjenje od 5 min
+        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key nije pronađen u konfiguraciji"))),
     };
 });
 
 
 
 
-// 4. Repozitorijumi
 
 var app = builder.Build();
 
@@ -86,7 +94,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); // Ovo pravi onaj plavi UI
+    app.UseSwaggerUI();
 }
 app.UseRouting();
 
