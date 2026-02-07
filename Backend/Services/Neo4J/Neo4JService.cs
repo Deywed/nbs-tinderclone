@@ -10,13 +10,18 @@ namespace Backend.Services.Neo4J
     public class Neo4JService : ISwipeService
     {
         private readonly IDriver _driver;
-        public Neo4JService(IDriver driver)
+        private readonly ICacheService _cacheService;
+        public Neo4JService(IDriver driver, ICacheService cacheService)
         {
             _driver = driver;
+            _cacheService = cacheService;
         }
 
         public async Task BlockUserAsync(string userId, string blockedUserId)
         {
+            await _cacheService.SetUserOnlineAsync(userId);
+
+
             await using var session = _driver.AsyncSession();
             await session.ExecuteWriteAsync(async tx =>
            {
@@ -33,6 +38,8 @@ namespace Backend.Services.Neo4J
 
         public async Task DislikeUserAsync(string userId, string dislikedUserId)
         {
+            await _cacheService.SetUserOnlineAsync(userId);
+
             await using var session = _driver.AsyncSession();
             await session.ExecuteWriteAsync(async tx =>
             {
@@ -45,10 +52,13 @@ namespace Backend.Services.Neo4J
             );
         }
 
-        public Task<List<string>> GetMatchesByUserIdAsync(string userId)
+        public async Task<List<string>> GetMatchesByUserIdAsync(string userId)
         {
-            var session = _driver.AsyncSession();
-            return session.ExecuteReadAsync(async tx =>
+            await _cacheService.SetUserOnlineAsync(userId);
+
+
+            await using var session = _driver.AsyncSession();
+            return await session.ExecuteReadAsync(async tx =>
             {
                 var query = @"
                 MATCH (u: User {id: $userId})-[:LIKES]->(liked: User)
@@ -67,9 +77,11 @@ namespace Backend.Services.Neo4J
 
         public async Task<bool> LikeUserAsync(string userId, string likedUserId)
         {
+            await _cacheService.SetUserOnlineAsync(userId);
+
             await using var session = _driver.AsyncSession();
 
-            return await session.ExecuteWriteAsync(async tx =>
+            var isMatch = await session.ExecuteWriteAsync(async tx =>
             {
                 var query = @"
                     MERGE (u1:User {id: $userId})
@@ -80,7 +92,6 @@ namespace Backend.Services.Neo4J
                     OPTIONAL MATCH (u2)-[r2:LIKES]->(u1)
                     RETURN r2 IS NOT NULL AS isMatch";
                 var result = await tx.RunAsync(query, new { userId, likedUserId });
-
                 if (await result.FetchAsync())
                 {
                     return result.Current["isMatch"].As<bool>();
@@ -88,10 +99,19 @@ namespace Backend.Services.Neo4J
                 return false;
             }
             );
+            if (isMatch)
+            {
+                await _cacheService.MatchAlertAsync(userId, likedUserId);
+                await _cacheService.MatchAlertAsync(likedUserId, userId);
+            }
+
+            return isMatch;
         }
 
         public async Task RemoveMatchAsync(string userId, string matchedUserId)
         {
+            await _cacheService.SetUserOnlineAsync(userId);
+
             await using var session = _driver.AsyncSession();
             await session.ExecuteWriteAsync(async tx =>
             {

@@ -11,28 +11,38 @@ namespace Backend.Services
     public class MongoUserService : IUserService
     {
         private readonly IMongoCollection<User> _users;
+        private readonly ICacheService _cacheService;
 
-        public MongoUserService(IMongoClient client)
+        public MongoUserService(IMongoClient client, ICacheService cacheService)
         {
             var database = client.GetDatabase("TinderDb");
             _users = database.GetCollection<User>("Users");
+            _cacheService = cacheService;
         }
-        public Task CreateUserAsync(User user) =>
-            _users.InsertOneAsync(user);
+        public Task CreateUserAsync(User user)
+        {
+            _cacheService.SetUserOnlineAsync(user.Id);
+            return _users.InsertOneAsync(user);
+        }
 
-        public Task DeleteUserAsync(Guid id) =>
-            _users.DeleteOneAsync(u => u.Id == id.ToString());
+        public Task DeleteUserAsync(Guid id)
+        {
+            return _users.DeleteOneAsync(u => u.Id == id.ToString());
+        }
         public Task<List<User>> GetAllUsersAsync()
         {
             return _users.Find(_ => true).ToListAsync();
         }
 
-        public Task<User> GetUserByEmailAsync(string email) =>
-            _users.Find(u => u.Email == email).FirstOrDefaultAsync();
+        public Task<User> GetUserByEmailAsync(string email)
+        {
+            return _users.Find(u => u.Email == email).FirstOrDefaultAsync();
+        }
 
-        public Task<User> GetUserByIdAsync(Guid id) =>
-            _users.Find(u => u.Id == id.ToString()).FirstOrDefaultAsync();
-
+        public Task<User> GetUserByIdAsync(Guid id)
+        {
+            return _users.Find(u => u.Id == id.ToString()).FirstOrDefaultAsync();
+        }
         public Task<List<User>> GetUsersByPreferencesAsync(User user)
         {
             var builder = Builders<User>.Filter;
@@ -47,7 +57,10 @@ namespace Backend.Services
             return _users.Find(filter).ToListAsync();
         }
 
-        public Task UpdateUserAsync(User user) =>
-            _users.ReplaceOneAsync(u => u.Id == user.Id, user);
+        public Task UpdateUserAsync(User user)
+        {
+            _cacheService.SetUserOnlineAsync(user.Id);
+            return _users.ReplaceOneAsync(u => u.Id == user.Id, user);
+        }
     }
 }
