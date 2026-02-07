@@ -1,6 +1,7 @@
 using System.Text;
 using Backend.Services;
 using Backend.Services.Interfaces;
+using Backend.Services.Neo4J;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -59,6 +60,7 @@ builder.Services.AddSingleton(GraphDatabase.Driver(neo4jUri, AuthTokens.Basic(ne
 // 4. Servsi
 builder.Services.AddScoped<IUserService, MongoUserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ISwipeService, Neo4JService>();
 
 // 5. JWT Authentication
 builder.Services.AddAuthentication(options =>

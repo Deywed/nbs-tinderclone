@@ -8,8 +8,11 @@ namespace Backend.Services.Interfaces
 {
     public interface ISwipeService
     {
-        Task RecordSwipeAsync(Guid swiperId, Guid swipeeId, SwipeType type);
-        Task<bool> IsMatchAsync(Guid userId1, Guid userId2);
-        
+        Task<bool> LikeUserAsync(string userId, string likedUserId);
+        Task DislikeUserAsync(string userId, string dislikedUserId);
+        Task<List<string>> GetMatchesByUserIdAsync(string userId);
+        Task RemoveMatchAsync(string userId, string matchedUserId);
+        Task BlockUserAsync(string userId, string blockedUserId);
+
     }
 }
