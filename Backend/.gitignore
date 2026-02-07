@@ -5,3 +5,8 @@ obj/
 *.cache
 *.log
 *.vs/
+
+[Bb]in/
+[Oo]bj/
+*.dll
+*.pdb
