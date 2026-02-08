@@ -81,6 +81,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
+                      if (emailController.text.isEmpty ||
+                          passwordController.text.isEmpty ||
+                          confirmPasswordController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please fill in all fields"),
+                          ),
+                        );
+                        return;
+                      }
+                      if (passwordController.text !=
+                          confirmPasswordController.text) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Passwords do not match"),
+                          ),
+                        );
+                        return;
+                      }
                       context.go('/profile-creation-screen');
                     },
                     style: ElevatedButton.styleFrom(
@@ -104,7 +123,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   children: [
                     const Text("Already have an account? "),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        context.go('/login-screen');
+                      },
                       child: const Text(
                         "Login",
                         style: TextStyle(

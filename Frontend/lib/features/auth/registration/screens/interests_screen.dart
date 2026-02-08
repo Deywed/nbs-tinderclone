@@ -122,7 +122,9 @@ class _InterestsScreenState extends State<InterestsScreen> {
       children: [
         IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back_ios)),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            context.go('/discovery-screen');
+          },
           child: const Text(
             'Skip',
             style: TextStyle(color: Color(0xFFE0535D), fontSize: 16),

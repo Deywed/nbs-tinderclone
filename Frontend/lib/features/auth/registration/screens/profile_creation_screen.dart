@@ -115,6 +115,15 @@ class _ProfileCreationScreenState extends State<ProfileCreationScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    if (nameController.text.isEmpty ||
+                        ageController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please fill in name and age"),
+                        ),
+                      );
+                      return;
+                    }
                     context.go('/orientation-screen');
                   },
                   style: ElevatedButton.styleFrom(

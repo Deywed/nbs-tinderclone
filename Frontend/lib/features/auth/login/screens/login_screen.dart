@@ -64,6 +64,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    if (emailController.text.isEmpty ||
+                        passwordController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please enter email and password"),
+                        ),
+                      );
+                      return;
+                    }
                     context.go('/discovery-screen');
                   },
                   style: ElevatedButton.styleFrom(
