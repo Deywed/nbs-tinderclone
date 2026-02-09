@@ -1,12 +1,15 @@
 using System.Text;
+using Backend.Hubs;
 using Backend.Services;
 using Backend.Services.Interfaces;
 using Backend.Services.Neo4J;
+using Backend.Services.Redis;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Neo4j.Driver;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,10 +60,31 @@ var neo4jUser = builder.Configuration["Neo4jSettings:User"];
 var neo4jPass = builder.Configuration["Neo4jSettings:Password"];
 builder.Services.AddSingleton(GraphDatabase.Driver(neo4jUri, AuthTokens.Basic(neo4jUser, neo4jPass)));
 
+var redisConnectionString = builder.Configuration.GetSection("Redis:ConnectionString").Value;
+
+// Registracija ConnectionMultiplexer-a kao Singleton (to je preporuka za Redis)
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(redisConnectionString!));
+
 // 4. Servsi
 builder.Services.AddScoped<IUserService, MongoUserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISwipeService, Neo4JService>();
+builder.Services.AddScoped<ICacheService, RedisService>();
+
+builder.Services.AddSignalR();
+
+// 2. Podesi CORS (MORAŠ dozvoliti Credentials zbog SignalR-a)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFlutter", policy =>
+    {
+        policy.WithOrigins("http://localhost:XXXXX") // Port tvog Fluttera
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Obavezno za SignalR!
+    });
+});
 
 // 5. JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -98,6 +122,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowFlutter");
+
+// 3. Mapiraj rutu za Hub
+app.MapHub<MatchHub>("/matchHub");
 app.UseRouting();
 
 app.UseAuthentication();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tinderclone/common/user_model.dart';
 import 'package:tinderclone/core/bottom_nav_bar.dart';
 import 'package:tinderclone/features/auth/login/screens/login_screen.dart';
 import 'package:tinderclone/features/auth/registration/screens/interests_screen.dart';
@@ -24,7 +25,10 @@ class AppRouter {
       ),
       GoRoute(
         path: '/profile-creation-screen',
-        builder: (context, state) => ProfileCreationScreen(),
+        builder: (context, state) {
+          final user = state.extra as UserModel?;
+          return ProfileCreationScreen(user: user);
+        },
       ),
       GoRoute(
         path: '/orientation-screen',

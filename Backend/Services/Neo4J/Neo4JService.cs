@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Backend.Hubs;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 using Neo4j.Driver;
 
 namespace Backend.Services.Neo4J
@@ -11,10 +13,12 @@ namespace Backend.Services.Neo4J
     {
         private readonly IDriver _driver;
         private readonly ICacheService _cacheService;
-        public Neo4JService(IDriver driver, ICacheService cacheService)
+        private readonly IHubContext<MatchHub> _hubContext;
+        public Neo4JService(IDriver driver, ICacheService cacheService, IHubContext<MatchHub> hubContext)
         {
             _driver = driver;
             _cacheService = cacheService;
+            _hubContext = hubContext;
         }
 
         public async Task BlockUserAsync(string userId, string blockedUserId)

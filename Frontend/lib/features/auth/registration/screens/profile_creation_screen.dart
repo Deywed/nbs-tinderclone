@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tinderclone/common/user_model.dart';
 
 class ProfileCreationScreen extends StatefulWidget {
-  const ProfileCreationScreen({super.key});
+  final UserModel? user;
+  const ProfileCreationScreen({super.key, this.user});
 
   @override
   State<ProfileCreationScreen> createState() => _ProfileCreationScreenState();

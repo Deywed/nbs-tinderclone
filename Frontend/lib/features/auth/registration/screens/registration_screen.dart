@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tinderclone/common/user_model.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -13,6 +14,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+
+  UserModel user = UserModel();
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +103,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         );
                         return;
                       }
-                      context.go('/profile-creation-screen');
+                      user = user.copyWith(
+                        email: emailController.text,
+                        passwordHash: passwordController.text,
+                      );
+                      context.go('/profile-creation-screen', extra: user);
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
